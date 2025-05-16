@@ -8,3 +8,9 @@ My data science and analytics projects
 3. R programming
 4. Looker GA4 Dasboard
 5. Linear Regression Model using caret
+
+## Contract Me
+reach out to me at JuJu
+
+## Image
+![sky Vanila](https://img.freepik.com/free-photo/beautiful-dusk-light-colorful-beauty_1203-5706.jpg?semt=ais_hybrid&w=740)
