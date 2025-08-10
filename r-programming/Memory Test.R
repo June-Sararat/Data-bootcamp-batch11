@@ -1,35 +1,147 @@
-#Load the package 
+# Load the package
 library(readr)
-library(tidyverse)
 library(dplyr)
+library(agricolae)
 
 
-#read a csv file
-m_data <- read_csv("Memory Test on Drugged Islanders Data.csv")
+# Read a csv file
+mt <- read_csv("Memory Test on Drugged Islanders Data.csv")
 
-#View the rows and columns of the data 
-dim(M_Data)
+# Check the structure of the data
+glimpse(mt)
 
-#Check the structure of the data
-glimpse(M_Data)
+# Check the data for the older age group
+mt %>% 
+  select(age, Happy_Sad_group) %>%
+  arrange(-age) %>%
+  head(1)
 
-#get a summary of the data
-summary(M_Data)
+# Check the number of participants in each group
+happy_A_1 <- mt [(mt$Happy_Sad_group == "H") &
+                   (mt$Drug == "A") &
+                   (mt$Dosage == 1), ]
+count(happy_A_1)
 
-#data cleaning
-data <- na.omit(M_Data)
+
+happy_A_2 <- mt [(mt$Happy_Sad_group == "H") &
+                   (mt$Drug == "A") &
+                   (mt$Dosage == 2), ]
+count(happy_A_2)
+
+
+happy_A_3 <- mt [(mt$Happy_Sad_group == "H") &
+                   (mt$Drug == "A") &
+                   (mt$Dosage == 3), ]
+count(happy_A_3)
+
+
+sad_A_1 <- mt [(mt$Happy_Sad_group == "S") &
+                 (mt$Drug == "A") &
+                 (mt$Dosage == 1), ]
+count(sad_A_1)
+
+sad_A_2 <- mt [(mt$Happy_Sad_group == "S") &
+                 (mt$Drug == "A") &
+                 (mt$Dosage == 2), ]
+count(sad_A_2)
+
+sad_A_3 <- mt [(mt$Happy_Sad_group == "S") &
+                 (mt$Drug == "A") &
+                 (mt$Dosage == 3), ]
+count(sad_A_3)
+
+
+happy_S_1 <- mt [(mt$Happy_Sad_group == "H") &
+                   (mt$Drug == "S") &
+                   (mt$Dosage == 1), ]
+count(happy_S_1)
+
+
+happy_S_2 <- mt [(mt$Happy_Sad_group == "H") &
+                   (mt$Drug == "S") &
+                   (mt$Dosage == 2), ]
+count(happy_S_2)
+
+
+happy_S_3 <- mt [(mt$Happy_Sad_group == "H") &
+                   (mt$Drug == "S") &
+                   (mt$Dosage == 3), ]
+count(happy_S_3)
+
+
+sad_S_1 <- mt [(mt$Happy_Sad_group == "S") &
+                 (mt$Drug == "S") &
+                 (mt$Dosage == 1), ]
+count(sad_S_1)
+
+
+sad_S_2 <- mt [(mt$Happy_Sad_group == "S") &
+                 (mt$Drug == "S") &
+                 (mt$Dosage == 2), ]
+count(sad_S_2)
+
+
+sad_S_3 <- mt [(mt$Happy_Sad_group == "S") &
+                 (mt$Drug == "S") &
+                 (mt$Dosage == 3), ]
+count(sad_S_3)
+
+
+happy_T_1 <- mt [(mt$Happy_Sad_group == "H") &
+                   (mt$Drug == "T") &
+                   (mt$Dosage == 1), ]
+count(happy_T_1)
+
+
+happy_T_2 <- mt [(mt$Happy_Sad_group == "H") &
+                   (mt$Drug == "T") &
+                   (mt$Dosage == 2), ]
+count(happy_T_2)
+
+
+happy_T_3 <- mt [(mt$Happy_Sad_group == "H") &
+                   (mt$Drug == "T") &
+                   (mt$Dosage == 3), ]
+count(happy_T_3)
+
+sad_T_1 <- mt [(mt$Happy_Sad_group == "S") &
+                 (mt$Drug == "T") &
+                 (mt$Dosage == 1), ]
+count(sad_T_1)
+
+sad_T_2 <- mt [(mt$Happy_Sad_group == "S") &
+                 (mt$Drug == "T") &
+                 (mt$Dosage == 2), ]
+count(sad_T_2)
+
+sad_T_3 <- mt [(mt$Happy_Sad_group == "S") &
+                 (mt$Drug == "T") &
+                 (mt$Dosage == 3), ]
+count(sad_T_3)
+
+# Change data types (Character -> factor)
+mt$Happy_Sad_group <- as.factor(mt$Happy_Sad_group)
+mt$Drug <- as.factor(mt$Drug)
+mt$Dosage <- as.factor(mt$Dosage)
+
+# Create boxplot
+plot(Diff~Happy_Sad_group, data = mt)
+plot(Diff~Drug, data = mt)
+plot(Diff~Dosage, data = mt)
 
 # Calculate mean memory score difference by Drug and Dosage
-mean_data <- m_data %>%
+mean_data <- mt %>%
   group_by(Drug, Dosage) %>%
   summarise(mean_diff = mean(Diff))
+mean_data
 
 # Prepare data for plotting
-drugs <- unique(m_data$Drug)
+drugs <- unique(mt$Drug)
 x <- c(1, 2, 3) # Dosages
 
 # Create plot
-plot(x, mean_data$mean_diff[mean_data$Drug == drugs [1]], #first drug
+plot(x, mean_data$mean_diff[mean_data$Drug == drugs [1]],  
+# First drug
      type = "b",
      ylim = c (-5,25),
      ylab = "Average Difference in Memory Score",
@@ -42,7 +154,7 @@ for (i in 1:length(drugs)) {
         type = "b",
         col = i, # Use different colors
         lty = i  # Use different line types
-        )
+  )
 }
 
 # Add legend
@@ -52,15 +164,23 @@ legend("topleft",
        lty = 1:length(drugs),
        cex = 0.8)
 
-m_data$Happy_Sad_group <- as.factor(m_data$Happy_Sad_group)
-m_data$Drug <- as.factor(m_data$Drug)
-m_data$Dosage <- as.factor(m_data$Dosage)
+# ANOVA
+mt_anova <- aov( data = mt, Diff ~ Happy_Sad_group + Dosage + Drug)
+
+summary(mt_anova)
 
 
-plot(Diff~Happy_Sad_group, data = m_data)
-plot(Diff~Drug, data = m_data)
-plot(Diff~Dosage, data = m_data)
+# PostHoc Comparison
+# Tukey Honest Significant Difference (HSD)
+TukeyHSD(mt_anova)
+
+HS_HSD <- HSD.test(y= mt_anova, trt = "Happy_Sad_group")
+HS_HSD
 
 
+Dosage_HSD <- HSD.test(y= mt_anova, trt = "Dosage")
+Dosage_HSD
 
 
+Drug_HSD <- HSD.test(y= mt_anova, trt = "Drug")
+Drug_HSD
