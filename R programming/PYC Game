@@ -1,0 +1,52 @@
+play_game <- function(){
+  print("Welcome to PYC Game")
+  user_name <- readline("Please enter your username: ")
+  com_hands <- c("rock", "paper", "scissor")
+  user_hands <- c("rock", "paper", "scissor", "quit")
+  round <- 0
+  com_score <- 0
+  user_score <- 0
+  tie_score <- 0
+  
+  
+  while (round < 10 ) {
+    print (paste0 ("Round ", round +1 ))
+    com_hand <- sample(com_hands, 1)
+    user_hand <- readline("Please choose one option: paper, scissor, rock or quit: ")
+    if (user_hand == "quit"){
+      print("Game stop.")
+      break
+    }
+    
+    message("Computer:", com_hand)
+    message("You:", user_hand)
+    
+    if(com_hand == user_hand){
+      message("Result: Tie!")
+      tie_score <- tie_score + 1
+      
+    }else if ((com_hand == "paper" & user_hand == "rock") |
+              (com_hand == "scissor" & user_hand == "paper")|
+              (com_hand == "rock" & user_hand == "scissor")){
+      message("Result: Computer win!")
+      com_score <- com_score + 1
+      
+    }else if ((com_hand == "rock" & user_hand == "paper") |
+              (com_hand == "paper" & user_hand == "scissor")|
+              (com_hand == "scissor" & user_hand == "rock")){
+      message("Result: You win!") 
+      user_score <- user_score + 1   
+    }
+    round <- round + 1
+  }
+  
+  player <- c("Computer", user_name, "Tie sum: ")
+  score <- c(com_score, user_score, tie_score)
+  result <- data.frame(player, score)
+  
+  message("--- Score summary ---")
+  print(result)
+  if (com_score < user_score){
+    message("Congratulation! You win.")
+  } else message("Try again next time!")
+}
