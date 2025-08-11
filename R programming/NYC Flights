@@ -1,0 +1,63 @@
+View(flights)
+glimpse(flights)
+
+1. 5 อันดับ ไฟล์บินที่มีเวลาล่าช้ากว่ากำหนดในการนำเครื่องออกจากสนามบินต้นทาง ในปี 2023
+most_dep_dely <- flights %>%
+  select(month, carrier, origin, dest, dep_delay) %>%
+  mutate(time_dep_delay = round(dep_delay / 60, 2), 
+  #ทำการหาร dep_delay ด้วย 60 เพื่อแปลงหน่วยจากนาทีเป็นชั่วโมง คำนวณออกมาให้เป็นทศนิยม 2 ตำแหน่ง        
+  flight = paste(origin, dest, sep = " - ")) %>%
+  #ทำการเชื่อม origin(เมืองต้นทาง) และ dest(เมืองปลายทาง) ด้วยเครื่องหมาย -
+  arrange(desc(time_dep_delay)) %>%
+  head(5) %>%
+  left_join(airlines, by = "carrier") %>%
+  select(-origin, -dest) %>%  
+  # Remove origin and dest columns
+  View()
+
+2. 5 อันดับ สนามบินปลายทางที่เครื่องบินลงจอดมากที่สุด ในปี 2023
+most_dest <- flights %>%
+  select(dest) %>%
+  count(dest) %>%
+  arrange(-n) %>%
+  mutate(total = n) %>%
+  head(5) %>%
+  left_join( airports, by = c("dest"= "faa")) %>%
+  select(-lat, -lon, -alt, -tz, -dst, -n) %>%
+  select(dest, name, total, tzone) %>%
+  View()
+
+3. 5 อันดับ สายการบินที่มีการใช้มากที่สุดใน ปี 2023
+most_carrier <- flights %>%
+count(carrier) %>%
+arrange(-n) %>%
+mutate(total = n) %>%
+select(-n) %>%
+head(5) %>%
+left_join(airlines, by = "carrier") %>%
+View()
+
+4. 5 อันดับ เดือนที่มีการบินมากสุดใน ปี 2023
+most_flights_month <- flights %>%
+	select(month, carrier) %>%
+	count(month) %>%         
+	arrange(-n) %>%  
+	mutate(total_flights = n) %>%
+	select(-n) %>%
+	head(5) %>% 
+	View() 
+
+5. ในเดือนเมษายนมีสายการบินอะไรบ้างที่มีเส้นทางบินระหว่าง LGA - DEN 
+four_month_LGA_DEN <- flights %>%
+	filter(month == 4,
+	origin == "LGA",
+	dest == "DEN") %>%
+	select(carrier, month, origin, dest) %>%
+	mutate(flight = paste(origin, dest, sep = " - ")) %>%
+	count(carrier, flight) %>%
+	arrange(-n) %>%
+	left_join(airlines, by = "carrier") %>%
+	mutate(name_carrier = name, total = n) %>%
+	select(-name, -n, flight, carrier) %>%
+	select(name_carrier, carrier, everything()) %>%
+	View() 
